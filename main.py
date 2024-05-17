@@ -1,6 +1,8 @@
 from src.tools.debug import debug
 import os
 
+# TODO: move 'check_git' into the do config module
+
 
 def check_git() -> None:  # first lest check for git to be installed
     """Check for git to be installed
