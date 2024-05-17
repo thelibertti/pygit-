@@ -1,0 +1,3 @@
+USER_GMAIL = ""
+USER_NAME = ""
+DEFAULLT_BRANCH = ""
