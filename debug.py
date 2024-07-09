@@ -35,12 +35,12 @@ def debug(message: str, type_message: str):
     }
 
     if type_message in colors:
-        print(colors[type_message] + message + colors["reset"])
+        print(f"{colors[type_message]} {message} {colors["reset"]}")
     else:
-        print(colors["I"] + message + colors["reset"])
+        print(f"{colors["I"]} {message} {colors["reset"]}")
 
 
-def print_colorful(string: str, color: str, bg_color=None):
+def print_cf(string: str, color: str, bg_color=None):
     """
     Print colorfull messages into the console,
 
@@ -90,4 +90,4 @@ def print_colorful(string: str, color: str, bg_color=None):
         else:
             msg_bg = Fore.WHITE
 
-    print(msg_bg + msg_color + string + Style.RESET_ALL)
+    print(f"{msg_bg} {msg_color} {string} {Style.RESET_ALL}")
