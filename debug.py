@@ -11,6 +11,7 @@ from colorama import Style
 
 
 def debug(message: str, type_message: str):
+    message = str(message)
     """
     Usage:
     debug('foo', "I")
@@ -41,6 +42,7 @@ def debug(message: str, type_message: str):
 
 
 def print_cf(string: str, color: str, bg_color=None):
+    string = str(string)
     """
     Print colorfull messages into the console,
 
