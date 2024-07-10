@@ -32,7 +32,7 @@ class pygit:
         )
         self.parser.add_argument('-i', '--init',
                                  action='store_true',
-                                 help="starts a empty git repo")
+                                 help="starts an empty git repo")
 
         self.parser.add_argument('-c', '--commit',
                                  action='store_true',
