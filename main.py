@@ -79,6 +79,7 @@ class Pygit:
 
             self.display_basic_repo_info(repo)
             self.display_commit_info(commit_info)
+
         except ValueError:
             debug("NOT ENOUGH INFORMATION ABOUT THIS REPO", "W")
             debug("TRY ADDING SOME FILES FIRST OR DOING YOUR FIRST COMMIT!!",
@@ -88,8 +89,10 @@ class Pygit:
     def start_repo(self, path: str) -> None:
         command = f"git -C {path} init"
         preffix = ">/dev/null"
+
         if os.system(command + preffix) == 0:
             debug("Repository created successfully!", "M")
+
         else:
             debug("Repository couldn't be created", "E")
         exit()
@@ -142,20 +145,21 @@ class Pygit:
                 status_I = {"untracked": untra_I,
                             "unstaged": unsta_I,
                             "staged": stage_I}[status]
+
                 if status == "untracked":
                     print_cf(
                         f"{'' * 5} - {f_I}{file} Status: {status}{status_I}",
                         "M")
+
                 if status == "unstaged":
                     print_cf(
                         f"{'' * 5} - {f_I}{file} Status: {status}{status_I}",
-                        "Y"
-                    )
+                        "Y")
+
                 if status == "staged":
                     print_cf(
                         f"{'' * 5} - {f_I}{file} Status: {status}{status_I}",
-                        "G"
-                    )
+                        "G")
 
         print()
 
@@ -201,7 +205,7 @@ class Pygit:
             prefix = self.get_commit_prefix(common_prefixes)
             commit = asyncio.run(self.get_commit_message(prefix))
 
-            commit_msg = prefix + commit
+            commit_msg = prefix + '' + commit
 
             repo.index.commit(commit_msg)
             debug("Commit Done!!", "I")
@@ -248,6 +252,7 @@ class Pygit:
 
     def first_commit(self, repo: Repo) -> None:
         self.add_files_to_commit(repo)
+
         print_cf("Please introduce your first commit message:", "C")
         commit = input(">> ")
         repo.index.commit(commit)
@@ -268,7 +273,7 @@ class Pygit:
             repo.index.add(files_to_commit)
 
         else:
-            debug("No new files to add to index", "I")
+            debug("No new files to add to index", "E")
             exit(1)
 
 
