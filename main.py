@@ -205,7 +205,7 @@ class Pygit:
             prefix = self.get_commit_prefix(common_prefixes)
             commit = asyncio.run(self.get_commit_message(prefix))
 
-            commit_msg = prefix + '' + commit
+            commit_msg = prefix + ' ' + commit
 
             repo.index.commit(commit_msg)
             debug("Commit Done!!", "I")
@@ -256,9 +256,13 @@ class Pygit:
         print_cf("Please introduce your first commit message:", "C")
         commit = input(">> ")
         repo.index.commit(commit)
+        print()
         debug("FIRST COMMIT DONE!!", "M")
 
     def add_files_to_commit(self, repo: Repo) -> None:
+        debug("Please select the files you want to add to index", "M")
+        print()
+
         files = repo.untracked_files + \
             [item.a_path for item in repo.index.diff(None)]
 
