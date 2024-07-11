@@ -61,7 +61,7 @@ def multiple_selection_menu(options: list, title="") -> list:
         menu_highlight_style=('fg_cyan', 'bg_black'),
         multi_select=True,
         show_multi_select_hint=True,
-        preview_command="bat --color=always {}", preview_size=0.75)
+        preview_command="bat --color=always --diff {}", preview_size=0.75)
 
     index = menu.show()
     return index
