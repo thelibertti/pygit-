@@ -36,9 +36,9 @@ def debug(message: str, type_message: str):
     }
 
     if type_message in colors:
-        print(f"{colors[type_message]} {message} {colors['reset']}")
+        print(f"{colors[type_message]}{message}{colors['reset']}")
     else:
-        print(f"{colors['I']} {message} {colors['reset']}")
+        print(f"{colors['I']}{message}{colors['reset']}")
 
 
 def print_cf(string: str, color: str, bg_color=None):
@@ -92,4 +92,7 @@ def print_cf(string: str, color: str, bg_color=None):
         else:
             msg_bg = Fore.WHITE
 
-    print(f"{msg_bg} {msg_color} {string} {Style.RESET_ALL}")
+    if msg_bg:
+        print(f"{msg_bg}{msg_color}{string}{Style.RESET_ALL}")
+    else:
+        print(f"{msg_color}{string}{Style.RESET_ALL}")
