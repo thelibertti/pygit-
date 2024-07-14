@@ -1,12 +1,15 @@
 # WELCOME TO THE PYGIT++ ERA!!
 (WARNING: This program is not even in alpha; much of it is still incomplete work)
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e1324c5c0c954f8da2981d702dddb344)](https://app.codacy.com/gh/thelibertti/pygit-/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 ## PYGIT++
 **Pygit++ can be definde as simple as just as a better user
 experience for git**
 
+![template](https://github.com/user-attachments/assets/38a3e0db-4e94-4a06-a73a-4cee88c72408)
 
-## Get this buggy thing going
+## Get this buggy thing going!
 
 #### First clone this repo:
 
