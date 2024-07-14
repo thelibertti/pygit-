@@ -5,6 +5,7 @@ A bunch of tools usefull for the develoment
 of pigit++
 
 """
+from debug import debug
 from simple_term_menu import TerminalMenu
 from prompt_toolkit import Application
 from prompt_toolkit.key_binding import KeyBindings
@@ -55,13 +56,31 @@ def multiple_selection_menu(options: list, title="") -> list:
     options the user picks
 
     """
-    menu = TerminalMenu(
-        options,
-        title=title,
-        menu_highlight_style=('fg_cyan', 'bg_black'),
-        multi_select=True,
-        show_multi_select_hint=True,
-        preview_command="bat --color=always --diff {}", preview_size=0.75)
+
+    if len(options) <= 8:
+        menu = TerminalMenu(
+            options,
+            title=title,
+            menu_highlight_style=('fg_cyan', 'bg_black'),
+            multi_select=True,
+            show_multi_select_hint=True,
+            preview_command="bat --color=always {}",
+            preview_size=0.75)
+    elif len(options) >= 9 and len(options) <= 34:
+        menu = TerminalMenu(
+            options,
+            title=title,
+            menu_highlight_style=('fg_cyan', 'bg_black'),
+            multi_select=True,
+            show_multi_select_hint=True
+        )
+
+    else:
+        debug(
+            "More than 35 files were found, pygit unable to display them all!",
+            "E")
+        debug("Please add the files manually", "I")
+        exit(1)
 
     index = menu.show()
     return index
