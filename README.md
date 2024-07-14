@@ -1,7 +1,7 @@
 # WELCOME TO THE PYGIT++ ERA!!
 (WARNING: This program is not even in alpha; much of it is still incomplete work)
 
-## WHAT'S THIS?
+## PYGIT++
 **Pygit++ can be definde as simple as just as a better user
 experience for git**
 
@@ -34,4 +34,4 @@ And that’s it, you’re good to go!
 
 ## HELP?
 
-##### Try ```pigit -h``` or see the DOCS
+##### Try ```pygit -h``` or see the DOCS
