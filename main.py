@@ -1,11 +1,14 @@
 # Pygit++ official source code
 # see DOCS
-# version 0.1
+# version 0.0.01
 
 # TODO: Well right now the following commands will be implemented:
 #   - -s, --show (Display full information of the git repository)
 #   - -p, --push (A better way to push code into github)
-#   - -a, --add (Adding files to the workarea)
+#
+# WARN: Known bugs/problems:
+#   -   (0)
+#
 # NOTE: see 'DOCS/roadmap.md'
 
 from debug import debug
@@ -29,24 +32,38 @@ class Pygit:
         self.handle_args()
 
     def setup_arg_parser(self) -> None:
+        """
+        Setting up argparser with all its
+        commands
+        """
+
         self.parser = argparse.ArgumentParser(
             prog="PYGIT++",
             description="Tool to work better with git",
-            epilog="version 0.01"
+            epilog="version 0.0.0.01"
         )
         self.parser.add_argument(
             '-i', '--init',
             action='store_true',
-            help="starts an empty git repo")
+            help="Starts an empty git repo")
 
         self.parser.add_argument(
             '-c', '--commit',
             action='store_true',
-            help="better way to commit your work")
+            help="A better way to commit your work")
+
+        self.parser.add_argument(
+            '-a', '--add',
+            action='store_true',
+            help='A better way to add your work'
+        )
 
         self.args = self.parser.parse_args()
 
     def handle_args(self) -> None:
+        """
+        See what flags are on
+        """
         if self.args.init:
             self.start_repo(self.path)
 
@@ -54,10 +71,21 @@ class Pygit:
 
         if self.args.commit:
             self.commit_work(self.repo)
+            exit()
+
+        if self.args.add:
+            self.add_files_to_index(self.repo)
+            exit()
+
         else:
             self.show_info_from_repo(self.repo)
+            exit()
 
     def create_repo_object(self, path: str) -> Repo:
+        """
+        Creates the repo object
+        """
+
         try:
             repo = Repo(path)
             if repo.bare:
@@ -68,6 +96,12 @@ class Pygit:
             exit()
 
     def show_info_from_repo(self, repo: Repo) -> None:
+        """
+        Main funtion
+
+        displays the basic information
+        of the current repo
+        """
         try:
             last_commit = repo.head.commit
             commit_info = {
@@ -87,6 +121,12 @@ class Pygit:
             exit(1)
 
     def start_repo(self, path: str) -> None:
+        """
+        Main function
+
+        handles the 'init' repo
+        flag
+        """
         command = f"git -C {path} init"
         preffix = ">/dev/null"
 
@@ -98,10 +138,12 @@ class Pygit:
         exit()
 
     def display_basic_repo_info(self, repo: Repo) -> None:
-        f_I = "  "
-        untra_I = "  "
-        unsta_I = "  "
-        stage_I = " 󰈖 "
+        """
+        Sub-function from: show_info_from_repo
+
+        handles the display of some information such as
+        the files that were in the last commit
+        """
         file_status = {
             "untracked": repo.untracked_files,
             "unstaged": [item.a_path for item in repo.index.diff(None)],
@@ -122,19 +164,15 @@ class Pygit:
             print()
 
         else:
-            self.display_dirty_status(
-                file_status,
-                f_I,
-                untra_I,
-                unsta_I,
-                stage_I)
+            self.display_dirty_status(file_status)
 
-    def display_dirty_status(self,
-                             file_status: dict,
-                             f_I: str,
-                             untra_I: str,
-                             unsta_I: str,
-                             stage_I: str) -> None:
+    def display_dirty_status(self, file_status: dict) -> None:
+        """
+        Sub-function from: display_basic_repo_info
+
+        handles the diplay of information in case
+        the current repo is dirty
+        """
         dirty_icon = " "
 
         print_cf(f"branch status: {dirty_icon}Dirty", "R")
@@ -142,28 +180,46 @@ class Pygit:
 
         for status, files in file_status.items():
             for file in files:
-                status_I = {"untracked": untra_I,
-                            "unstaged": unsta_I,
-                            "staged": stage_I}[status]
-
-                if status == "untracked":
-                    print_cf(
-                        f"{'' * 5} - {f_I}{file} Status: {status}{status_I}",
-                        "M")
-
-                if status == "unstaged":
-                    print_cf(
-                        f"{'' * 5} - {f_I}{file} Status: {status}{status_I}",
-                        "Y")
-
-                if status == "staged":
-                    print_cf(
-                        f"{'' * 5} - {f_I}{file} Status: {status}{status_I}",
-                        "G")
+                self.display_file_status(file, status)
 
         print()
 
+    def display_file_status(self, file: str, status: int) -> None:
+        """
+        Sub-function from: display_dirty_status
+
+        displays the files that are dirty plus their current status
+        """
+        file_icon = "  "
+        untracked_ic = "  "
+        unstaged_ic = "  "
+        staged_ic = " 󰈖 "
+        color = ""
+
+        status_icons = {
+            "untracked": untracked_ic,
+            "unstaged": unstaged_ic,
+            "staged": staged_ic
+        }
+        if status == "untracked":
+            color = "M"
+        if status == "unstaged":
+            color = "Y"
+        if status == "staged":
+            color = "G"
+
+        print_cf(
+            f"  - {file_icon}{file} Status: {status}{status_icons[status]}",
+            color
+        )
+
     def display_commit_info(self, commit_info: dict) -> None:
+        """
+        Sub-function from: show_info_from_repo
+
+        handles the display of the information
+        of very last commit
+        """
         file_icon = " "
         print_cf(f"Last commit: {commit_info['commit_abbr']}", "B")
         print_cf(f"Commit ID: {commit_info['commit_id']}", "B")
@@ -182,6 +238,12 @@ class Pygit:
                     repo.index.diff("HEAD"))
 
     def commit_work(self, repo: Repo) -> None:
+        """
+        Main function
+
+        Handles the flag -c --commit
+        in order to commit work
+        """
         common_prefixes = [
             "[Added]",
             "[Improved]",
@@ -219,7 +281,7 @@ class Pygit:
         print()
 
         if yes_or_no_menu() == 'Y':
-            self.add_files_to_commit(repo)
+            self.add_files_to_index(repo)
 
         else:
             debug("Commit action cancelled by user", "I")
@@ -228,6 +290,7 @@ class Pygit:
     def display_files_to_commit(self,
                                 staged_files: List[str],
                                 file_icon: str) -> None:
+
         print_cf("Files that will be committed:", "G")
         for item in staged_files:
             print_cf(f" - {file_icon} {item}", "B")
@@ -251,7 +314,11 @@ class Pygit:
         return await app.run()
 
     def first_commit(self, repo: Repo) -> None:
-        self.add_files_to_commit(repo)
+        staged_files = [item[0] for item in repo.index.entries.keys()]
+        if not staged_files:
+            self.add_files_to_index(repo)
+
+        self.display_files_to_commit(staged_files, " ")
 
         print_cf("Please introduce your first commit message:", "C")
         commit = input(">> ")
@@ -259,7 +326,7 @@ class Pygit:
         print()
         debug("FIRST COMMIT DONE!!", "M")
 
-    def add_files_to_commit(self, repo: Repo) -> None:
+    def add_files_to_index(self, repo: Repo) -> None:
         debug("Please select the files you want to add to index", "M")
         print()
 
@@ -270,11 +337,14 @@ class Pygit:
             index = multiple_selection_menu(files)
             files_to_commit = [os.path.join(
                 os.getcwd(), files[item]) for item in index]
-            for item in files_to_commit:
-                debug(f"file added {item}", "W")
+            for counter, item in enumerate(files_to_commit):
+                debug(f"file added: {os.path.basename(item)}", "I")
 
             print()
             repo.index.add(files_to_commit)
+            print_cf(f"{counter+1} New files were added to index!!", "G")
+
+            print()
 
         else:
             debug("No new files to add to index", "E")
