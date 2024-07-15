@@ -7,6 +7,7 @@
 **Pygit++ can be definde as simple as just as a better user
 experience for git**
 
+![template](https://github.com/user-attachments/assets/15d2905a-7436-406e-8fc0-0f325fccb853)
 
 # Get this buggy thing goin!
 
