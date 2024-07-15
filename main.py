@@ -19,6 +19,7 @@ from tools import multiple_choice_menu
 from tools import miniCommitTypingApp
 import argparse
 import os
+import sys
 from git import Repo
 import git
 from typing import List, Optional
@@ -71,15 +72,15 @@ class Pygit:
 
         if self.args.commit:
             self.commit_work(self.repo)
-            exit()
+            sys.exit()
 
         if self.args.add:
             self.add_files_to_index(self.repo)
-            exit()
+            sys.exit()
 
         else:
             self.show_info_from_repo(self.repo)
-            exit()
+            sys.exit()
 
     def create_repo_object(self, path: str) -> Repo:
         """
@@ -91,9 +92,10 @@ class Pygit:
             if repo.bare:
                 debug("Bare repository was found", "E")
             return repo
+
         except git.exc.InvalidGitRepositoryError:
             debug("No valid git repository could be found", "E")
-            exit()
+            sys.exit()
 
     def show_info_from_repo(self, repo: Repo) -> None:
         """
@@ -118,7 +120,7 @@ class Pygit:
             debug("NOT ENOUGH INFORMATION ABOUT THIS REPO", "W")
             debug("TRY ADDING SOME FILES FIRST OR DOING YOUR FIRST COMMIT!!",
                   "I")
-            exit(1)
+            sys.exit()
 
     def start_repo(self, path: str) -> None:
         """
@@ -135,7 +137,7 @@ class Pygit:
 
         else:
             debug("Repository couldn't be created", "E")
-        exit()
+        sys.exit()
 
     def display_basic_repo_info(self, repo: Repo) -> None:
         """
@@ -348,7 +350,7 @@ class Pygit:
 
         else:
             debug("No new files to add to index", "E")
-            exit(1)
+            sys.exit()
 
 
 if __name__ == "__main__":
