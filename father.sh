@@ -1,3 +1,5 @@
+#!/bin/bash
+#
 # Father of pygit++
 #
 # remote builder and installer 
