@@ -20,10 +20,11 @@ and it will build and set up the binary for you**
 **Please notice that you will need the following 
 dependencies in your system**
 
-- curl
-- unzip
-- wget
-- python
+- [curl](https://curl.se/)
+- [unzip](https://infozip.sourceforge.net/Zip.html)
+- [wget](https://linux.die.net/man/1/wget)
+- [python](https://www.python.org/)
+- [bat](https://github.com/sharkdp/bat)
 
 (Note: sudo permission is required in order to place
 the binary into ```/opt/pygit++``` and to creare the simbolic link )
@@ -53,6 +54,9 @@ git clone https://github.com/thelibertti/pygit-
 ```bash
 pip install -r requirements.txt
 ```
+
+**External dependencies**
+- [bat](https://github.com/sharkdp/bat)
 
 ### Add it to your path!
 look for your shell configuration file such as '.zshrc' or '.bashrc'
