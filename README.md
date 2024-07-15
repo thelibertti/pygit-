@@ -21,9 +21,10 @@ and it will build and set up the binary for you**
 dependencies in your system**
 
 - [curl](https://curl.se/)
-- [unzip](https://infozip.sourceforge.net/Zip.html)
+- [unzip](https://linux.die.net/man/1/unzip)
 - [wget](https://linux.die.net/man/1/wget)
 - [python](https://www.python.org/)
+- [python-venv](https://docs.python.org/3/library/venv.html)
 - [bat](https://github.com/sharkdp/bat)
 
 (Note: sudo permission is required in order to place

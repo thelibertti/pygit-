@@ -29,7 +29,7 @@ pip install pyinstaller > /dev/null
 pyinstaller --strip --name pygit++ pygit/main.py > /dev/null
 
 echo -e "${GREEN}Moving binary to /opt and creating symbolic link...${NC}"
-sudo mv dist/pygit++ /opt/pygit++
+sudo mv dist/* /opt/pygit++
 sudo ln -sf /opt/pygit++/pygit++ /usr/local/bin/pygit++
 
 echo -e "${GREEN}Cleaning up and removing 'build' folder...${NC}"
