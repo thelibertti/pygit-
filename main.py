@@ -5,6 +5,9 @@
 # TODO: Well right now the following commands will be implemented:
 #   - -s, --show (Display full information of the git repository)
 #   - -p, --push (A better way to push code into github)
+#   - add support for subcomands
+#   - redo the --init flag
+#   - please re-check the user-manual before pushing
 #
 # WARN: Known bugs/problems:
 #   -   (0)
@@ -41,21 +44,32 @@ class Pygit:
         self.parser = argparse.ArgumentParser(
             prog="PYGIT++",
             description="Tool to work better with git",
-            epilog="version 0.0.0.01"
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            epilog="""
+    version 0.0.0.01
+    please run 'pygit++ -man' to see full documentation manual"""
         )
+
         self.parser.add_argument(
-            '-i', '--init',
+            '-i',
             action='store_true',
-            help="Starts an empty git repo")
+            help='Starts a empty repo in the current direcory')
+
+        self.parser.add_argument(
+            '--init',
+            action='store_true',
+            help='Set up the current directory to be a git repo')
 
         self.parser.add_argument(
             '-c', '--commit',
-            action='store_true',
-            help="A better way to commit your work")
+            metavar='<commit msg>',
+            nargs='*',
+            help='A better way to commit your work')
 
         self.parser.add_argument(
             '-a', '--add',
-            action='store_true',
+            metavar='<file> <files>',
+            nargs='*',
             help='A better way to add your work'
         )
 
@@ -70,11 +84,11 @@ class Pygit:
 
         self.repo = self.create_repo_object(self.path)
 
-        if self.args.commit:
-            self.commit_work(self.repo)
+        if self.args.commit is not None:
+            self.commit_work(self.repo, self.args.commit)
             sys.exit()
 
-        if self.args.add:
+        if self.args.add is not None:
             self.add_files_to_index(self.repo)
             sys.exit()
 
@@ -108,7 +122,8 @@ class Pygit:
             last_commit = repo.head.commit
             commit_info = {
                 "commit_id": last_commit.hexsha,
-                "commit_abbr": repo.git.rev_parse(last_commit.hexsha, short=7),
+                "commit_abbr": repo.git.rev_parse(last_commit.hexsha,
+                                                  short=7),
                 "commit_message": last_commit.message.strip(),
                 "committed_files": list(last_commit.stats.files.keys())
             }
@@ -177,7 +192,7 @@ class Pygit:
         """
         dirty_icon = " "
 
-        print_cf(f"branch status: {dirty_icon}Dirty", "R")
+        print_cf(f"branch status: {dirty_icon} Dirty", "R")
         print_cf(f"{'' * 3}dirty files:", "R")
 
         for status, files in file_status.items():
@@ -239,7 +254,7 @@ class Pygit:
                     repo.index.diff(None) or
                     repo.index.diff("HEAD"))
 
-    def commit_work(self, repo: Repo) -> None:
+    def commit_work(self, repo: Repo, commit_msg: list[str]) -> None:
         """
         Main function
 
@@ -257,15 +272,16 @@ class Pygit:
             "No preffix",
             "Cancel Commit"
         ]
-        file_icon = " "
 
         try:
             staged_files = [item.a_path for item in repo.index.diff("HEAD")]
             if not staged_files:
                 self.handle_no_staged_files(repo)
 
-            staged_files = [item.a_path for item in repo.index.diff("HEAD")]
-            self.display_files_to_commit(staged_files, file_icon)
+            if commit_msg:
+                self.handler_commit_msg(repo, commit_msg)
+
+            self.display_files_to_commit(repo)
             prefix = self.get_commit_prefix(common_prefixes)
             commit = asyncio.run(self.get_commit_message(prefix))
 
@@ -277,7 +293,31 @@ class Pygit:
         except git.exc.BadName:
             self.first_commit(repo)
 
-    def handle_no_staged_files(self, repo: Repo) -> bool:
+    def handler_commit_msg(self, repo: Repo, msg: str) -> None:
+        """Subfunction of 'commit_work'
+        handler for the commit message
+        """
+        if len(msg) != 1:
+            debug("Multiple commit messages were giving, aborting!", "E")
+            debug("Usage: pygit++ -c [commit_msg]", "I")
+            sys.exit(1)
+
+        repo.index.commit(msg[0])
+        affected_files = list(repo.head.commit.stats.files.keys())
+        print_cf("Commited files:", "B")
+
+        for file in affected_files:
+            print_cf(f" - {file}", "G")
+        print()
+
+        debug("Commit Done!", "I")
+        sys.exit(0)
+
+    def handle_no_staged_files(self, repo: Repo) -> None:
+        """ Subfunction of 'commit work'
+        handles when there are not staged files
+        """
+
         debug("There are no files to commit!", "W")
         debug("Would you like to add files to commit?", "M")
         print()
@@ -287,11 +327,11 @@ class Pygit:
 
         else:
             debug("Commit action cancelled by user", "I")
-            exit()
+            sys.exit()
 
-    def display_files_to_commit(self,
-                                staged_files: List[str],
-                                file_icon: str) -> None:
+    def display_files_to_commit(self, repo: Repo) -> None:
+        file_icon = " "
+        staged_files = [item.a_path for item in repo.index.diff("HEAD")]
 
         print_cf("Files that will be committed:", "G")
         for item in staged_files:
@@ -309,7 +349,7 @@ class Pygit:
             return ""
         else:
             debug("Commit canceled by user", "I")
-            exit()
+            sys.exit()
 
     async def get_commit_message(self, prefix: str) -> str:
         app = miniCommitTypingApp(prefix)
