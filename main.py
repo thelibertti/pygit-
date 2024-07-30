@@ -372,7 +372,7 @@ class Pygit:
         debug("FIRST COMMIT DONE!!", "M")
 
     def add_files_to_index(self, repo: Repo) -> None:
-        debug("Please select the files you want to add to index", "M")
+        debug("Please select the files you want to add to the index", "M")
         print()
 
         files = repo.untracked_files + \
@@ -392,7 +392,7 @@ class Pygit:
             print()
 
         else:
-            debug("No new files to add to index", "E")
+            debug("No new files to add to the index", "E")
             sys.exit()
 
 
