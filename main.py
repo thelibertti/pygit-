@@ -268,6 +268,7 @@ class Pygit:
             "[Deleted]",
             "[Renamed]",
             "[Modified]",
+            "[Hot Fix]",
             None,
             "No preffix",
             "Cancel Commit"
@@ -297,6 +298,8 @@ class Pygit:
         """Subfunction of 'commit_work'
         handler for the commit message
         """
+        file_icon = " "
+
         if len(msg) != 1:
             debug("Multiple commit messages were giving, aborting!", "E")
             debug("Usage: pygit++ -c [commit_msg]", "I")
@@ -307,7 +310,7 @@ class Pygit:
         print_cf("Commited files:", "B")
 
         for file in affected_files:
-            print_cf(f" - {file}", "G")
+            print_cf(f" -{file_icon} {file}", "G")
         print()
 
         debug("Commit Done!", "I")
@@ -343,9 +346,9 @@ class Pygit:
         print_cf("Would you like to add a prefix to your commit", "Y")
         print()
         index = multiple_choice_menu(common_prefixes)
-        if index != 7 and index != 8:
+        if index != 8 and index != 9:
             return common_prefixes[index]
-        elif index == 7:
+        elif index == 8:
             return ""
         else:
             debug("Commit canceled by user", "I")
