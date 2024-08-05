@@ -1,5 +1,5 @@
-### Future commands:
-- #### -s, --show
+# Future commands:
+- ### -s, --show Status: Being work on
 
 **This command will display full information about
 the current git repository for example things like a full
@@ -17,13 +17,18 @@ Some things that could be into the information displayed are:
 
 among other important information abour the repository
 
-- #### -p, --push
+- ### -p, --push Status: Pending
 
 **A full optimization of the push procces where the user
 has to pretty much just commit and pygit should be able to complete
 do the rest of the work for the user always keeping a clean UX**
 
-- #### -c, --commit 
+
+- ### -a, -add Status: Implemented ✅
+**A interactive way to add files to the index of the repo**
+
+
+- ### -c, --commit Status: Implemented ✅ 
 **A better way to commit your work for example now you can select
 what is your commit about (for example you added somethin '[ADD]' 
 or you modified somethings '[MODIFY]') and this will be added as a 
