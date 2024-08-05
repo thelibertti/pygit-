@@ -5,31 +5,37 @@
 # TODO: Well right now the following commands will be implemented:
 #   - -s, --show (Display full information of the git repository)
 #   - -p, --push (A better way to push code into github)
-#   - add support for subcomands
 #   - redo the --init flag
-#   - please re-check the user-manual before pushing
+#       - TODO: We need to complete the other mini app
+#       - that will display the current hierarchy that
+#       - will be used for the user to select the files
+#       - that they want to add to their .gitignore file
 #
 # WARN: Known bugs/problems:
 #   -   (0)
 #
 # NOTE: see 'DOCS/roadmap.md'
 
-from debug import debug
-from debug import print_cf
-from tools import yes_or_no_menu
-from tools import multiple_selection_menu
-from tools import multiple_choice_menu
-from tools import miniCommitTypingApp
+from utils.debug import debug
+from utils.debug import print_cf
+from utils.tools import yes_or_no_menu
+from utils.tools import multiple_selection_menu
+from utils.tools import multiple_choice_menu
+from utils.tools import miniCommitTypingApp
 import argparse
 import os
 import sys
 from git import Repo
 import git
-from typing import List, Optional
 import asyncio
 
 
 class Pygit:
+    """
+    Section: Setup of
+    argparser plus its configuration
+    """
+
     def __init__(self):
         self.path = os.getcwd()
         self.setup_arg_parser()
@@ -37,17 +43,17 @@ class Pygit:
 
     def setup_arg_parser(self) -> None:
         """
-        Setting up argparser with all its
-        commands
+        Setting up argparser with all the
+        commands that pygit++ support
         """
 
         self.parser = argparse.ArgumentParser(
             prog="PYGIT++",
-            description="Tool to work better with git",
+            description="The tool to work better with git",
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog="""
-    version 0.0.0.01
-    please run 'pygit++ -man' to see full documentation manual"""
+    version 0.0.01
+    please run 'pygit++ -man' to see the user manual"""
         )
 
         self.parser.add_argument(
@@ -72,15 +78,23 @@ class Pygit:
             nargs='*',
             help='A better way to add your work'
         )
+        self.parser.add_argument(
+            '-m', '-man',
+            action='store_true',
+            help="Displays the user manual"
+        )
 
         self.args = self.parser.parse_args()
 
     def handle_args(self) -> None:
         """
-        See what flags are on
+        Check for flags are on
         """
+        if self.args.i:
+            self.create_empty_repo(self.path)
+
         if self.args.init:
-            self.start_repo(self.path)
+            self.setup_current_work_dic(self.path)
 
         self.repo = self.create_repo_object(self.path)
 
@@ -89,12 +103,23 @@ class Pygit:
             sys.exit()
 
         if self.args.add is not None:
-            self.add_files_to_index(self.repo)
+            self.add_files_to_index(self.repo, self.args.add)
             sys.exit()
+
+        if self.args.m:
+            self.display_manual()
 
         else:
             self.show_info_from_repo(self.repo)
-            sys.exit()
+            sys.exit(0)
+    """
+    End of section:
+    Argparser
+    """
+
+    """
+    Section: init pygit++
+    """
 
     def create_repo_object(self, path: str) -> Repo:
         """
@@ -102,7 +127,7 @@ class Pygit:
         """
 
         try:
-            repo = Repo(path)
+            repo = Repo(path, search_parent_directories=True)
             if repo.bare:
                 debug("Bare repository was found", "E")
             return repo
@@ -111,12 +136,85 @@ class Pygit:
             debug("No valid git repository could be found", "E")
             sys.exit()
 
+    def create_empty_repo(self, path: str) -> None:
+        """
+        Main function
+
+        handler for the -i flag
+        """
+        command = f"git -C {path} init"
+        preffix = ">/dev/null"
+
+        if os.system(command + preffix) == 0:
+            debug("Repository created successfully!", "M")
+
+        else:
+            debug("Repository couldn't be created", "E")
+        sys.exit(1)
+
+    def setup_current_work_dic(self, path: str) -> None:
+        """
+        Main function:
+
+        Handler for the '--init' flag
+        """
+        path_conf = "~/.pygitconf"
+
+        # path = os.getcwd()
+        # self.start_repo(path)
+
+        debug("Setting up this repo based on your configuration...", "I")
+        try:
+            with open(path_conf, 'r') as file:
+                data = file.readall()
+                print(data)
+                file.close()
+
+        except FileNotFoundError:
+            print()
+            debug("Configuration file couln't be found", "W")
+            debug("Run 'pygit++ --setup' to configure it", "I")
+            sys.exit(1)
+
+    def create_dot_gitignore(self, path: str):
+        """
+        Sub-function of 'setup_current_work_dict'
+        """
+
+        raise NotADirectoryError
+
+    """
+    End Section:
+    init pygit++
+    """
+
+    """
+    Section:
+    Manual
+    """
+
+    def display_manual(self) -> None:
+        path = "~/python/projects/pygit/DOCS/man/man.md"
+        url = "https://github.com/thelibertti/pygit-/tree/main/DOCS/man/man.md"
+
+        os.system(f"bat {path}")
+
+        print_cf("Remember that the user manual is also aviable at:", "C")
+        print_cf(url, 'C')
+
+    """
+    End Section:
+    Manual
+    """
+
+    """
+    Section:
+    Diplay Information from current repo
+    """
+
     def show_info_from_repo(self, repo: Repo) -> None:
         """
         Main funtion
-
-        displays the basic information
-        of the current repo
         """
         try:
             last_commit = repo.head.commit
@@ -135,28 +233,11 @@ class Pygit:
             debug("NOT ENOUGH INFORMATION ABOUT THIS REPO", "W")
             debug("TRY ADDING SOME FILES FIRST OR DOING YOUR FIRST COMMIT!!",
                   "I")
-            sys.exit()
-
-    def start_repo(self, path: str) -> None:
-        """
-        Main function
-
-        handles the 'init' repo
-        flag
-        """
-        command = f"git -C {path} init"
-        preffix = ">/dev/null"
-
-        if os.system(command + preffix) == 0:
-            debug("Repository created successfully!", "M")
-
-        else:
-            debug("Repository couldn't be created", "E")
-        sys.exit()
+            sys.exit(1)
 
     def display_basic_repo_info(self, repo: Repo) -> None:
         """
-        Sub-function from: show_info_from_repo
+        Sub-function of: show_info_from_repo
 
         handles the display of some information such as
         the files that were in the last commit
@@ -185,10 +266,7 @@ class Pygit:
 
     def display_dirty_status(self, file_status: dict) -> None:
         """
-        Sub-function from: display_basic_repo_info
-
-        handles the diplay of information in case
-        the current repo is dirty
+        Sub-function of: display_basic_repo_info
         """
         dirty_icon = " "
 
@@ -203,9 +281,7 @@ class Pygit:
 
     def display_file_status(self, file: str, status: int) -> None:
         """
-        Sub-function from: display_dirty_status
-
-        displays the files that are dirty plus their current status
+        Sub-function of: display_dirty_status
         """
         file_icon = "  "
         untracked_ic = "  "
@@ -232,10 +308,7 @@ class Pygit:
 
     def display_commit_info(self, commit_info: dict) -> None:
         """
-        Sub-function from: show_info_from_repo
-
-        handles the display of the information
-        of very last commit
+        Sub-function of: show_info_from_repo
         """
         file_icon = " "
         print_cf(f"Last commit: {commit_info['commit_abbr']}", "B")
@@ -254,12 +327,21 @@ class Pygit:
                     repo.index.diff(None) or
                     repo.index.diff("HEAD"))
 
+    """
+    End Section:
+    Display Information from current repo
+    """
+
+    """
+    Section:
+    Commit work
+    """
+
     def commit_work(self, repo: Repo, commit_msg: list[str]) -> None:
         """
         Main function
 
         Handles the flag -c --commit
-        in order to commit work
         """
         common_prefixes = [
             "[Added]",
@@ -282,7 +364,7 @@ class Pygit:
             if commit_msg:
                 self.handler_commit_msg(repo, commit_msg)
 
-            self.display_files_to_commit(repo)
+            self.display_files_to_commit(repo, staged_files)
             prefix = self.get_commit_prefix(common_prefixes)
             commit = asyncio.run(self.get_commit_message(prefix))
 
@@ -292,11 +374,12 @@ class Pygit:
             debug("Commit Done!!", "I")
 
         except git.exc.BadName:
+            if commit_msg:
+                self.handler_commit_msg(repo, commit_msg)
             self.first_commit(repo)
 
     def handler_commit_msg(self, repo: Repo, msg: str) -> None:
         """Subfunction of 'commit_work'
-        handler for the commit message
         """
         file_icon = " "
 
@@ -318,7 +401,7 @@ class Pygit:
 
     def handle_no_staged_files(self, repo: Repo) -> None:
         """ Subfunction of 'commit work'
-        handles when there are not staged files
+        Handler for when there are not staged files.
         """
 
         debug("There are no files to commit!", "W")
@@ -332,9 +415,12 @@ class Pygit:
             debug("Commit action cancelled by user", "I")
             sys.exit()
 
-    def display_files_to_commit(self, repo: Repo) -> None:
+    def display_files_to_commit(self, repo: Repo,
+                                staged_files: list[str]) -> None:
+        """
+        Sub-function of 'commit_work'
+        """
         file_icon = " "
-        staged_files = [item.a_path for item in repo.index.diff("HEAD")]
 
         print_cf("Files that will be committed:", "G")
         for item in staged_files:
@@ -342,7 +428,11 @@ class Pygit:
 
         print()
 
-    def get_commit_prefix(self, common_prefixes: List[Optional[str]]) -> str:
+    def get_commit_prefix(self, common_prefixes: list[str]) -> str:
+        """
+        Sub-function of 'commit_work':
+        """
+
         print_cf("Would you like to add a prefix to your commit", "Y")
         print()
         index = multiple_choice_menu(common_prefixes)
@@ -355,15 +445,23 @@ class Pygit:
             sys.exit()
 
     async def get_commit_message(self, prefix: str) -> str:
+        """
+        Sub-function of 'Commit work':
+        """
+
         app = miniCommitTypingApp(prefix)
         return await app.run()
 
     def first_commit(self, repo: Repo) -> None:
+        """
+        Sub-function of 'commit_work':
+        """
+
         staged_files = [item[0] for item in repo.index.entries.keys()]
         if not staged_files:
             self.add_files_to_index(repo)
 
-        self.display_files_to_commit(staged_files, " ")
+        self.display_files_to_commit(repo, staged_files)
 
         print_cf("Please introduce your first commit message:", "C")
         commit = input(">> ")
@@ -371,29 +469,64 @@ class Pygit:
         print()
         debug("FIRST COMMIT DONE!!", "M")
 
-    def add_files_to_index(self, repo: Repo) -> None:
-        debug("Please select the files you want to add to the index", "M")
-        print()
+    """
+    End Section:
+    Commit Work
+    """
+
+    """
+    Section:
+    Add files to index
+    """
+
+    def add_files_to_index(self, repo: Repo, files_to_add=[]) -> None:
+        """
+        Main function
+        """
+        title = "Please select the files you want to add to index"
 
         files = repo.untracked_files + \
             [item.a_path for item in repo.index.diff(None)]
 
+        if len(files_to_add) == 1:
+            if files_to_add[0] == '.':
+                repo.index.add(files)
+                self.display_files_added_to_index(files)
+                sys.exit(0)
+
+        if len(files_to_add) >= 1:
+            repo.index.add(files_to_add)
+            self.display_files_added_to_index(files_to_add)
+            sys.exit(0)
+
         if files:
-            index = multiple_selection_menu(files)
+            index = multiple_selection_menu(files, title=title)
             files_to_commit = [os.path.join(
                 os.getcwd(), files[item]) for item in index]
-            for counter, item in enumerate(files_to_commit):
-                debug(f"file added: {os.path.basename(item)}", "I")
 
-            print()
+            self.display_files_added_to_index(files_to_commit)
+
             repo.index.add(files_to_commit)
-            print_cf(f"{counter+1} New files were added to index!!", "G")
-
-            print()
 
         else:
             debug("No new files to add to the index", "E")
             sys.exit()
+
+    def display_files_added_to_index(self, files: list[str],) -> None:
+        """
+        Sub-function of: 'add_files_to_index'
+        """
+        for counter, item in enumerate(files):
+            debug(f"File added: {os.path.basename(item)}", "I")
+        print()
+
+        print_cf(f"{counter+1} New files were added to the index!!", "G")
+        print()
+
+    """
+    End Section:
+    Add files to index
+    """
 
 
 if __name__ == "__main__":
