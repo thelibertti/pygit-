@@ -3,3 +3,4 @@ __pycache__/
 pygit++/
 test.sh
 build/
+utils/__pycache__/
