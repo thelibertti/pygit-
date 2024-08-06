@@ -12,7 +12,12 @@
 #       - that they want to add to their .gitignore file
 #
 # WARN: Known bugs/problems:
-#   -   (0)
+#   -   (1)
+#   - The Program is unable to add files
+#   - That has been moved into a diferent folder
+#   - Or has been deleted
+#   - This causes the program to crash when tring to
+#   - Add those changes into the index
 #
 # NOTE: see 'DOCS/roadmap.md'
 
@@ -24,6 +29,7 @@ from utils.tools import multiple_choice_menu
 from utils.tools import miniCommitTypingApp
 import argparse
 import os
+from subprocess import Popen
 import sys
 from git import Repo
 import git
@@ -64,7 +70,15 @@ class Pygit:
         self.parser.add_argument(
             '--init',
             action='store_true',
-            help='Set up the current directory to be a git repo')
+            help='Set up the current directory to be a git repo'
+        )
+
+        self.parser.add_argument(
+            '-G',
+            help="Run git commands",
+            metavar='command command...',
+            nargs='*'
+        )
 
         self.parser.add_argument(
             '-c', '--commit',
@@ -97,6 +111,9 @@ class Pygit:
             self.setup_current_work_dic(self.path)
 
         self.repo = self.create_repo_object(self.path)
+
+        if self.args.G is not None:
+            self.pass_commands_git(self.repo, self.args.G)
 
         if self.args.commit is not None:
             self.commit_work(self.repo, self.args.commit)
@@ -131,6 +148,7 @@ class Pygit:
             if repo.bare:
                 debug("Bare repository was found", "E")
             return repo
+            repo
 
         except git.exc.InvalidGitRepositoryError:
             debug("No valid git repository could be found", "E")
@@ -143,9 +161,11 @@ class Pygit:
         handler for the -i flag
         """
         command = f"git -C {path} init"
-        preffix = ">/dev/null"
+        suffix = ">/dev/null"
 
-        if os.system(command + preffix) == 0:
+        result = Popen(f"{command} {suffix}", shell=True).wait()
+
+        if result == 0:
             debug("Repository created successfully!", "M")
 
         else:
@@ -197,7 +217,7 @@ class Pygit:
         path = "~/python/projects/pygit/DOCS/man/man.md"
         url = "https://github.com/thelibertti/pygit-/tree/main/DOCS/man/man.md"
 
-        os.system(f"bat {path}")
+        Popen(f"bat {path}", shell=True).wait()
 
         print_cf("Remember that the user manual is also aviable at:", "C")
         print_cf(url, 'C')
@@ -526,6 +546,24 @@ class Pygit:
     """
     End Section:
     Add files to index
+    """
+
+    """
+    Section:
+    Gitwork
+    """
+
+    def pass_commands_git(self, repo: Repo, commands: list[any],) -> None:
+        prefix = "git"
+        commands = ' '.join(commands)
+        print(commands)
+        exit()
+
+        Popen(f"{prefix} {commands}", shell=True).wait()
+        sys.exit(0)
+
+    """
+    End Section Gitwork
     """
 
 
