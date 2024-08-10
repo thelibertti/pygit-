@@ -62,6 +62,7 @@ class Pygit:
     version 0.0.01
     please run 'pygit++ -man' to see the user manual"""
         )
+
         # main arguments
 
         self.parser.add_argument(
@@ -96,8 +97,8 @@ class Pygit:
         )
         self.parser.add_argument(
             '-m', '-man',
-            action='store_true',
-            help="Displays the user manual"
+            nargs='*',
+            help="Displays the manuals"
         )
 
         # end main arguments
@@ -141,6 +142,9 @@ class Pygit:
                 self.setup()
             self.help_setup()
 
+        if self.args.m is not None:
+            self.display_manual(self.args.m)
+
         self.repo = self.create_repo_object(self.path)
 
         if self.args.G is not None:
@@ -153,9 +157,6 @@ class Pygit:
         if self.args.add is not None:
             self.add_files_to_index(self.repo, self.args.add)
             sys.exit()
-
-        if self.args.m:
-            self.display_manual()
 
         if len(sys.argv) == 1:
             self.show_info_from_repo(self.repo)
@@ -244,14 +245,43 @@ class Pygit:
     Manual
     """
 
-    def display_manual(self) -> None:
-        path = "~/python/projects/pygit/DOCS/man/man.md"
-        url = "https://github.com/thelibertti/pygit-/tree/main/DOCS/man/man.md"
+    def display_manual(self, manual: str) -> None:
+        """
+        Main Function
+        """
+        if len(manual) > 1:
+            debug("Multiple arguments were given.", "E")
+            print()
+            debug("Run 'pygit++ -m' to see the user manual", "I")
+            sys.exit(1)
 
-        Popen(f"bat {path}", shell=True).wait()
+        path = os.path.expanduser("~/.pygit/")
+        url = "https://github.com/thelibertti/pygit-/tree/main/DOCS/man/"
+        usr_manual = "man.md"
+        setup_man = "getting_started.md"
 
-        print_cf("Remember that the user manual is also aviable at:", "C")
-        print_cf(url, 'C')
+        usr_manual_url = f"{url}{usr_manual}"
+        setup_man_url = f"{url}{setup_man}"
+
+        msg = "Remember that the this manual is also aviable at:"
+
+        if len(manual) == 0:
+            Popen(f"bat {path}{usr_manual}", shell=True).wait()
+
+            print()
+            print_cf(msg, "C")
+            print_cf(usr_manual_url, 'C')
+            sys.exit(0)
+
+        if manual[0] == 'setup':
+            Popen(f"bat {path}{setup_man}", shell=True).wait()
+
+            print()
+            print_cf(msg, "C")
+            print_cf(setup_man_url, 'C')
+        else:
+            debug(f"Not manual for: {manual[0]}", "E")
+            sys.exit(1)
 
     """
     End Section:
@@ -624,20 +654,25 @@ class Pygit:
 """
 
         dir_path = os.path.expanduser("~/.pygit/")
-        prefix = f"cd {dir_path} && wget"
+
+        prefix = f"cd {dir_path} && wget -q"
         url = "https://raw.githubusercontent.com/thelibertti/pygit-/"
-        suffix = "main/DOCS/"
-        name1 = "/man.md"
-        name2 = "/getting_started.md"
+        suffix = "main/DOCS/man/"
+        name1 = "man.md"
+        name2 = "getting_started.md"
 
         if not os.path.exists(dir_path):
             Popen(f"mkdir -p {dir_path}", shell=True).wait()
             Popen(f"touch  {dir_path}pygitconf.json", shell=True).wait()
             write_into_json_file(basic_config)
-            # Popen(f"{prefix} {url}{suffix}{name1} -O {name1}").wait()
-            # Popen(
-            # f"{prefix} {url}{suffix}{name2} -O {name2}"
-            # ).wait()
+
+            Popen(
+                f"{prefix} {url}{suffix}{name1} -O {name1}", shell=True
+            ).wait()
+
+            Popen(
+                f"{prefix} {url}{suffix}{name2} -O {name2}", shell=True
+            ).wait()
             sys.exit(0)
 
         else:
