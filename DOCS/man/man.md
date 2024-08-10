@@ -49,13 +49,42 @@ if your directory already has some work we sugesst you to run
 
 ### --init
 
+**Setup your corrent work dir to be a git repo**
+
 **Usage:**
 ```bash
 pygit++ --init
 ```
 
-This command will help you to set up your current
-directory into a git repo
+This command will setup your current dir to be a git repo
+based on the configurations on your ```~/pygitconf.json```
+file.
+
+see [!getting started] to instruction how to setup the
+configuration file
+
+
+### -G 
+**Pass commands directly to git**
+
+**Usage:**
+```bash
+pygit++ -G "your git command"
+```
+
+> [!NOTE] 
+>  we encurage you to put your command
+>  as a string as passing it as plain text may cause 
+>  pygit++ to detect them as other command causing errors
+
+This command is intended to facilitate pipelines with pygit++. 
+For example, you can use ```pygit++ -G "reset --soft HEAD~1" -c```
+this will undo your last commit and start the procees to make
+a new one.
+
+> [!NOTE]
+> When you use the ```-G``` flag you dont need to put git
+> in front of your git command.
 
 
 ### -a, --add
