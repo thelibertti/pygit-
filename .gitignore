@@ -4,3 +4,4 @@ pygit++/
 test.sh
 build/
 utils/__pycache__/
+debugs
