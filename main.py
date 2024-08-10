@@ -27,6 +27,7 @@ from utils.tools import yes_or_no_menu
 from utils.tools import multiple_selection_menu
 from utils.tools import multiple_choice_menu
 from utils.tools import miniCommitTypingApp
+from utils.json_work import write_into_json_file
 import argparse
 import os
 from subprocess import Popen
@@ -61,6 +62,7 @@ class Pygit:
     version 0.0.01
     please run 'pygit++ -man' to see the user manual"""
         )
+        # main arguments
 
         self.parser.add_argument(
             '-i',
@@ -98,6 +100,28 @@ class Pygit:
             help="Displays the user manual"
         )
 
+        # end main arguments
+
+        # sub parser
+
+        subparsers = self.parser.add_subparsers(dest="setup")
+
+        setup_parser = subparsers.add_parser(
+            'setup',
+            help='Set up functions of pygit++')
+
+        setup_parser.add_argument(
+            '-c', '--clean',
+            help='Clean the current configuration and setup the default one',
+            action='store_true'
+        )
+
+        setup_parser.add_argument(
+            '-start',
+            help='starts the setup process',
+            action='store_true'
+        )
+
         self.args = self.parser.parse_args()
 
     def handle_args(self) -> None:
@@ -109,6 +133,13 @@ class Pygit:
 
         if self.args.init:
             self.setup_current_work_dic(self.path)
+
+        if self.args.setup:
+            if self.args.clean:
+                self.clean_configuration()
+            if self.args.start:
+                self.setup()
+            self.help_setup()
 
         self.repo = self.create_repo_object(self.path)
 
@@ -126,7 +157,7 @@ class Pygit:
         if self.args.m:
             self.display_manual()
 
-        else:
+        if len(sys.argv) == 1:
             self.show_info_from_repo(self.repo)
             sys.exit(0)
     """
@@ -554,16 +585,93 @@ class Pygit:
     """
 
     def pass_commands_git(self, repo: Repo, commands: list[any],) -> None:
+        """
+        Main Function
+        """
         prefix = "git"
         commands = ' '.join(commands)
-        print(commands)
-        exit()
 
         Popen(f"{prefix} {commands}", shell=True).wait()
-        sys.exit(0)
 
     """
     End Section Gitwork
+    """
+
+    """
+    Section:
+    Setup
+    """
+
+    def setup(self) -> None:
+        """Main function"""
+        debug("Setting up pygit++", "I")
+
+        basic_config = """
+{
+
+"profiles": {
+
+},
+
+"Common Prefixes": {
+
+}
+
+}
+
+
+
+"""
+
+        dir_path = os.path.expanduser("~/.pygit/")
+        prefix = f"cd {dir_path} && wget"
+        url = "https://raw.githubusercontent.com/thelibertti/pygit-/"
+        suffix = "main/DOCS/"
+        name1 = "/man.md"
+        name2 = "/getting_started.md"
+
+        if not os.path.exists(dir_path):
+            Popen(f"mkdir -p {dir_path}", shell=True).wait()
+            Popen(f"touch  {dir_path}pygitconf.json", shell=True).wait()
+            write_into_json_file(basic_config)
+            # Popen(f"{prefix} {url}{suffix}{name1} -O {name1}").wait()
+            # Popen(
+            # f"{prefix} {url}{suffix}{name2} -O {name2}"
+            # ).wait()
+            sys.exit(0)
+
+        else:
+            print()
+            debug("Configuration folder already exists. Exiting..", "W")
+            exit(1)
+
+    def clean_configuration(self) -> None:
+        dir_path = os.path.expanduser("~/.pygit")
+
+        """Sub-Function of debug"""
+        debug("This will delete all your current configuration folder", "W")
+        debug("And setup the default one", "W")
+        print()
+        print_cf("Continue?", "C")
+        if yes_or_no_menu() == "Y":
+            Popen(f"rm -r {dir_path}", shell=True).wait()
+            self.setup()
+        else:
+            debug("Operation cancelled by user", "I")
+
+    def help_setup(self) -> None:
+        """
+        Sub-Function of: setup
+        """
+        debug("No valid agument was passed!", "W")
+        print()
+        debug("Run 'pygit++ -man setup' or 'pygit++ setup -h'", "I")
+        debug("to see the DOCS.", "I")
+        exit(0)
+
+    """
+    End Section:
+    Setup
     """
 
 
