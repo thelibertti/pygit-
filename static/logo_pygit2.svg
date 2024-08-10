@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <style bx:fonts="Alata">@import url(https://fonts.googleapis.com/css2?family=Alata%3Aital%2Cwght%400%2C400&amp;display=swap);</style>
+    <style bx:fonts="Abhaya Libre">@import url(https://fonts.googleapis.com/css2?family=Abhaya+Libre%3Aital%2Cwght%400%2C400%3B0%2C500%3B0%2C600%3B0%2C700%3B0%2C800&amp;display=swap);</style>
+    <style bx:fonts="Angkor">@import url(https://fonts.googleapis.com/css2?family=Angkor%3Aital%2Cwght%400%2C400&amp;display=swap);</style>
+  </defs>
+  <rect x="-228.201" y="106.162" width="991.342" height="288.647" style="stroke: rgb(0, 0, 0); fill: rgb(22, 24, 25);"/>
+  <text style="fill: rgb(4, 170, 99); font-family: Alata; font-size: 28px; white-space: pre;" transform="matrix(3.3984, 0, 0, 3.203868, -406.810767, -566.430795)" x="149.526" y="234.106">Pygit++</text>
+  <text style="fill: rgb(46, 221, 151); font-family: 'Abhaya Libre'; font-size: 28px; white-space: pre;" x="99.593" y="363.565">The tool to work better with git.</text>
+  <ellipse style="stroke: rgb(0, 0, 0); fill: rgb(100, 238, 178);" cx="-125.643" cy="186.97" rx="14.341" ry="13.74" transform="matrix(1, -0.000913, 0, 1, -82.325134, -65.05543)"/>
+  <text style="fill: rgb(51, 51, 51); font-family: Angkor; font-size: 28px; white-space: pre;" transform="matrix(0.411233, 0, 0, 0.569626, -162.54674, 25.076489)" x="-138.086" y="179.365">D'L</text>
+  <rect x="105.544" y="294.108" width="350.634" height="5.34" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
+  <text style="fill: rgb(35, 177, 11); font-family: Arial, sans-serif; font-size: 28px; white-space: pre;" x="106.688" y="283.139" transform="matrix(1, 0, 0, 0.934537, 0, 18.918913)">$</text>
+  <text style="fill: rgb(100, 238, 178); font-family: Arial, sans-serif; font-size: 28px; white-space: pre;" transform="matrix(0.715323, 0, 0, 0.928389, 32.896164, 27.329083)" x="138.276" y="274.758">pygit++ -p</text>
+  <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 28px;" x="230.829" y="275.157" transform="matrix(0.507125, 0, 0, 0.883603, 109.828645, 39.093968)"># will be your new favorite command</text>
+</svg>
