@@ -1,10 +1,14 @@
 <p align="center">
-    <img src="static/logoPy.svg" width="200" height="200"/>
-
-    > [!WARNING]
-    > This program is not even in alpha; much of it is still incomplete work)
-
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e1324c5c0c954f8da2981d702dddb344)](https://app.codacy.com/gh/thelibertti/pygit-/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+    <img src="static/logo_pygit2.svg" width="2000" height="550"/>
+    
+    <p>
+        > [!WARNING]
+        > This program is not even in alpha; much of it is still incomplete work
+    </p>
+    
+    <p>
+        [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e1324c5c0c954f8da2981d702dddb344)](https://app.codacy.com/gh/thelibertti/pygit-/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+    </p>
 </p>
 
 # PYGIT++
