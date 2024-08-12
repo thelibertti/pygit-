@@ -6,6 +6,7 @@ of pigit++
 
 """
 from .debug import debug
+import os
 from simple_term_menu import TerminalMenu
 from prompt_toolkit import Application
 from prompt_toolkit.key_binding import KeyBindings
@@ -84,6 +85,13 @@ def multiple_selection_menu(options: list, title="") -> list:
 
     index = menu.show()
     return index
+
+
+def clean_screen():
+    if os.name == 'nt':
+        os.system("cls")
+    else:
+        os.system("clear")
 
 
 class miniCommitTypingApp:

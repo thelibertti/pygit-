@@ -24,55 +24,36 @@ def write_into_json_file(data: str) -> None:
 
             file.write(data)
             file.close()
+
     except FileNotFoundError:
         debug("Not configura was found", "E")
         exit(1)
 
 
-def get_information() -> dict[str: str]:
-    while True:
-        print_cf("Hey welcome lets setup your profile!", "C", "B")
+def write_new_profile(profile_data: dict[str: str]) -> None:
+    """
+    Writes a new profile into
+    '.pygitconfig.json'
+    """
 
-        print()
-        print_cf("What will be your username", "C")
-        usr_name = input("> ")
+    path = os.path.expanduser("~/.pygit/pygitconf.json")
 
-        print()
-        print_cf("What will be your email?", "C")
-        usr_email = input("> ")
+    name = profile_data['name']
+    email = profile_data['email']
+    branch = profile_data['branch']
+    msg = profile_data['commit_msg']
 
-        print()
-        print_cf("what will be your default branch", "C")
-        usr_branch = input("> ")
+    profile_body = {
+        "email": email,
+        "branch": branch,
+        "msg": msg
+    }
 
-        os.system("clear")
+    with open(path, 'r') as f:
+        content = json.loads(f.read())
+        f.close()
 
-        print_cf("Is this information current?")
-        print()
-        debug("User Name:", "I")
-        print(usr_name)
-
-        print()
-        debug("User Email:", "I")
-        print(usr_email)
-
-        print()
-        debug("Default Branch:", "I")
-        print(usr_branch)
-
-        if yes_or_no_menu() == "Y":
-            info = {
-                "name": usr_name,
-                "email": usr_email,
-                "branch": usr_branch
-            }
-            break
-            return info
-
-        continue
-
-
-def add_new_profile(email):
-    info = get_information()
-    with open("~/pygitconf.json", "") as f:
-        raise NotImplementedError
+    content['profiles'][name] = profile_body
+    with open(path, 'w') as f:
+        json.dump(content, f, indent=4)
+        f.close()
