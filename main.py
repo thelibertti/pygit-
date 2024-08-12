@@ -586,14 +586,14 @@ class Pygit:
             debug("No new files to add to the index", "E")
             sys.exit(1)
 
-        if len(files_to_add) == 1:
+        if len(files_to_add) >= 1:
             if files_to_add[0] == '.':
                 repo.index.add(files)
                 self.display_files_added_to_index(files)
 
-        if len(files_to_add) >= 1:
-            repo.index.add(files_to_add)
-            self.display_files_added_to_index(files_to_add)
+            else:
+                repo.index.add(files_to_add)
+                self.display_files_added_to_index(files_to_add)
 
         if len(files_to_add) == 0:
             index = multiple_selection_menu(files, title=title)
