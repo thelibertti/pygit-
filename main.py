@@ -27,7 +27,9 @@ from utils.tools import yes_or_no_menu
 from utils.tools import multiple_selection_menu
 from utils.tools import multiple_choice_menu
 from utils.tools import miniCommitTypingApp
+from utils.tools import clean_screen
 from utils.json_work import write_into_json_file
+from utils.json_work import write_new_profile
 import argparse
 import os
 from subprocess import Popen
@@ -118,8 +120,14 @@ class Pygit:
         )
 
         setup_parser.add_argument(
-            '-start',
+            '--start',
             help='starts the setup process',
+            action='store_true'
+        )
+
+        setup_parser.add_argument(
+            '-ap',
+            help="Adds a new profile into de config file",
             action='store_true'
         )
 
@@ -135,12 +143,19 @@ class Pygit:
         if self.args.init:
             self.setup_current_work_dic(self.path)
 
-        if self.args.setup:
+        if self.args.setup is not None:
+
             if self.args.clean:
                 self.clean_configuration()
+
             if self.args.start:
                 self.setup()
-            self.help_setup()
+
+            if self.args.ap:
+                self.add_new_profile()
+
+            if len(sys.argv) == 2:
+                self.help_setup()
 
         if self.args.m is not None:
             self.display_manual(self.args.m)
@@ -150,13 +165,11 @@ class Pygit:
         if self.args.G is not None:
             self.pass_commands_git(self.repo, self.args.G)
 
-        if self.args.commit is not None:
-            self.commit_work(self.repo, self.args.commit)
-            sys.exit()
-
         if self.args.add is not None:
             self.add_files_to_index(self.repo, self.args.add)
-            sys.exit()
+
+        if self.args.commit is not None:
+            self.commit_work(self.repo, self.args.commit)
 
         if len(sys.argv) == 1:
             self.show_info_from_repo(self.repo)
@@ -573,14 +586,12 @@ class Pygit:
             if files_to_add[0] == '.':
                 repo.index.add(files)
                 self.display_files_added_to_index(files)
-                sys.exit(0)
 
         if len(files_to_add) >= 1:
             repo.index.add(files_to_add)
             self.display_files_added_to_index(files_to_add)
-            sys.exit(0)
 
-        if files:
+        if len(files_to_add) == 0:
             index = multiple_selection_menu(files, title=title)
             files_to_commit = [os.path.join(
                 os.getcwd(), files[item]) for item in index]
@@ -589,9 +600,9 @@ class Pygit:
 
             repo.index.add(files_to_commit)
 
-        else:
+        elif len(files) == 0:
             debug("No new files to add to the index", "E")
-            sys.exit()
+            sys.exit(1)
 
     def display_files_added_to_index(self, files: list[str],) -> None:
         """
@@ -643,9 +654,27 @@ class Pygit:
 
 },
 
-"Common Prefixes": {
+"Common Prefixes": [
+    "[Added]",
+    "[Improved]",
+    "[Solved]",
+    "[Deleted]",
+    "[Renamed]",
+    "[Modified]",
+    "[Hot Fix]"
+],
 
-}
+"Watched Repos": {
+
+},
+
+"Ignored Files": [
+    "__pycache__/",
+    "dist/",
+    "node_modules/",
+    "*.log",
+    ".env"
+]
 
 }
 
@@ -673,17 +702,97 @@ class Pygit:
             Popen(
                 f"{prefix} {url}{suffix}{name2} -O {name2}", shell=True
             ).wait()
-            sys.exit(0)
 
         else:
             print()
             debug("Configuration folder already exists. Exiting..", "W")
             exit(1)
 
+    def add_new_profile(self) -> None:
+        info = self.get_new_profile_info()
+        write_new_profile(info)
+
+    def get_new_profile_info(self) -> dict[str: str]:
+        """
+        Sub-Function of:
+        setup
+        """
+        while True:
+            try:
+                info = self.questions()
+                if yes_or_no_menu() == "Y":
+                    return info
+                    break
+
+                clean_screen()
+                continue
+
+            except KeyboardInterrupt:
+                print()
+                debug("Operation cancelled by user", "I")
+                sys.exit(0)
+
+    def questions(self) -> None:
+        """
+        Sub-Function of:
+        get_new_profile_info
+        """
+        print_cf("Welcome lets setup your profile!", "C")
+        debug("(Use 'Ctrl' + 'c' to cancell)", "I")
+
+        print()
+        print_cf("What will your username be?", "C")
+        usr_name = input("> ")
+
+        print()
+        print_cf("What will your email be?", "C")
+        usr_email = input("> ")
+
+        print()
+        print_cf("what will your default branch be?", "C")
+        usr_branch = input("> ")
+
+        print()
+        print_cf("What will your initial commit msg be?", "C")
+        usr_commit = input("> ")
+
+        clean_screen()
+
+        print_cf("Is this information correct?", "C")
+        print()
+        debug("User Name:", "I")
+        print(usr_name)
+
+        print()
+        debug("User Email:", "I")
+        print(usr_email)
+
+        print()
+        debug("Default Branch:", "I")
+        print(usr_branch)
+
+        print()
+        debug("Initial Commit", "I")
+        print(usr_commit)
+
+        print()
+
+        info = {
+            "name": usr_name,
+            "email": usr_email,
+            "branch": usr_branch,
+            "commit_msg": usr_commit
+        }
+        return info
+
     def clean_configuration(self) -> None:
+        """
+        Sub-Function of:
+        debug
+        """
+
         dir_path = os.path.expanduser("~/.pygit")
 
-        """Sub-Function of debug"""
         debug("This will delete all your current configuration folder", "W")
         debug("And setup the default one", "W")
         print()
