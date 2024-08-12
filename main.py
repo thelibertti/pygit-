@@ -582,6 +582,10 @@ class Pygit:
         files = repo.untracked_files + \
             [item.a_path for item in repo.index.diff(None)]
 
+        if len(files) == 0:
+            debug("No new files to add to the index", "E")
+            sys.exit(1)
+
         if len(files_to_add) == 1:
             if files_to_add[0] == '.':
                 repo.index.add(files)
@@ -599,10 +603,6 @@ class Pygit:
             self.display_files_added_to_index(files_to_commit)
 
             repo.index.add(files_to_commit)
-
-        elif len(files) == 0:
-            debug("No new files to add to the index", "E")
-            sys.exit(1)
 
     def display_files_added_to_index(self, files: list[str],) -> None:
         """
