@@ -3,7 +3,9 @@
 </p>
 
 > [!WARNING]
-> This program is not even in alpha; much of it is still incomplete work
+> This project was moved [here.](https://github.com/DliberttiGroup/pygit-p-p)
+>
+> This repo is not longer manteined because it was moved [here](https://github.com/DliberttiGroup/pygit-p-p)
 
 # PYGIT++
 **Pygit++ can be defined as simple as just as a better user
